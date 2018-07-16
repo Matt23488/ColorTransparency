@@ -88,31 +88,28 @@ namespace ColorTransparency
         {
             var color = _mainView.Color;
 
-            using (var thingy = new BitmapManipulator(_image))
+            using (var image = _image.Clone() as Bitmap)
             {
-                for (int y = 0; y < thingy.Height; y++)
+                using (var thingy = new BitmapManipulator(image))
                 {
-                    for (int x = 0; x < thingy.Width; x++)
+                    for (int y = 0; y < thingy.Height; y++)
                     {
-                        var pixel = thingy.GetPixel(x, y);
-                        if (pixel.A == color.A
-                            && pixel.R == color.R
-                            && pixel.G == color.G
-                            && pixel.B == color.B)
+                        for (int x = 0; x < thingy.Width; x++)
                         {
-                            thingy.SetPixel(x, y, Color.Transparent);
+                            var pixel = thingy.GetPixel(x, y);
+                            if (pixel == color) thingy.SetPixel(x, y, Color.Transparent);
                         }
                     }
                 }
-            }
 
-            using (var memory = new MemoryStream())
-            {
-                using (var file = new FileStream(_mainView.DestinationFilePath, FileMode.Create, FileAccess.ReadWrite))
+                using (var memory = new MemoryStream())
                 {
-                    _image.Save(memory, ImageFormat.Png);
-                    var bytes = memory.ToArray();
-                    file.Write(bytes, 0, bytes.Length);
+                    using (var file = new FileStream(_mainView.DestinationFilePath, FileMode.Create, FileAccess.ReadWrite))
+                    {
+                        image.Save(memory, ImageFormat.Png);
+                        var bytes = memory.ToArray();
+                        file.Write(bytes, 0, bytes.Length);
+                    }
                 }
             }
         }

@@ -45,7 +45,7 @@ namespace ColorTransparency.Forms
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (_colorTextBox.Text[0] != '#')
+            if (_colorTextBox.Text.Length == 0 || _colorTextBox.Text[0] != '#')
             {
                 MessageBox.Show(
                     "Please select a color!",
